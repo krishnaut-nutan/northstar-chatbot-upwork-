@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>North Star Support Bot</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9Im9yYiIgeDE9IjQiIHkxPSI0IiB4Mj0iNjAiIHkyPSI2MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNmY4ZGZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMzUlIiBzdG9wLWNvbG9yPSIjYjI2YWZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNjUlIiBzdG9wLWNvbG9yPSIjZmY2YWQ1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzZhZmZlYSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZ2xvc3MiIGN4PSIzNCUiIGN5PSIyOCUiIHI9IjU1JSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMC45NSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQ1JSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxOCIgZmlsbD0iIzBjMGMwZiIvPgogIDxjaXJjbGUgY3g9IjMyIiBjeT0iMzIiIHI9IjIzIiBmaWxsPSJ1cmwoI29yYikiLz4KICA8Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyMyIgZmlsbD0idXJsKCNnbG9zcykiLz4KPC9zdmc+Cg==" />
+<style>
+  :root{
+    --green-900:#1b3a2b;
+    --green-700:#2f5d3c;
+    --green-500:#4a7a52;
+    --tan-100:#f4efe6;
+    --tan-50:#faf7f0;
+    --ink:#20281f;
+    --bot-bubble:#ffffff;
+    --user-bubble:#2f5d3c;
+    --user-text:#ffffff;
+    --page-bg:#e9e2d3;
+    --card-bg:#faf7f0;
+    --border:#d8cfba;
+    --chip-bg:#eef3ea;
+    --chip-border:#9db99f;
+    --chip-text:#1b3a2b;
+    --muted:#6b6355;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --page-bg:#141b16;
+      --card-bg:#1b241c;
+      --bot-bubble:#25311f;
+      --ink:#e9e6dc;
+      --border:#33402f;
+      --chip-bg:#233221;
+      --chip-border:#4a7a52;
+      --chip-text:#cfe8d2;
+      --muted:#a2a698;
+    }
+  }
+  :root[data-theme="dark"]{
+    --page-bg:#141b16;
+    --card-bg:#1b241c;
+    --bot-bubble:#25311f;
+    --ink:#e9e6dc;
+    --border:#33402f;
+    --chip-bg:#233221;
+    --chip-border:#4a7a52;
+    --chip-text:#cfe8d2;
+    --muted:#a2a698;
+  }
+  :root[data-theme="light"]{
+    --page-bg:#e9e2d3;
+    --card-bg:#faf7f0;
+    --bot-bubble:#ffffff;
+    --ink:#20281f;
+    --border:#d8cfba;
+    --chip-bg:#eef3ea;
+    --chip-border:#9db99f;
+    --chip-text:#1b3a2b;
+    --muted:#6b6355;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--page-bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:20px;
+  }
+
+  .app{
+    width:100%;
+    max-width:460px;
+    height:min(720px, 92vh);
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:20px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    box-shadow:0 10px 40px rgba(0,0,0,0.18);
+  }
+
+  .app-header{
+    background:linear-gradient(135deg,var(--green-900),var(--green-700));
+    color:#fdfbf6;
+    padding:16px 18px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .app-header .avatar{
+    width:38px;height:38px;border-radius:50%;
+    background:rgba(255,255,255,0.15);
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;
+    flex-shrink:0;
+  }
+  .app-header .titles{ line-height:1.25; min-width:0; }
+  .app-header .titles strong{ font-size:15px; display:block; }
+  .app-header .titles span{ font-size:12px; opacity:0.85; }
+  .status-dot{
+    width:8px;height:8px;border-radius:50%;background:#7be08c;
+    display:inline-block; margin-right:6px; box-shadow:0 0 0 2px rgba(123,224,140,0.25);
+  }
+
+  .messages{
+    flex:1;
+    overflow-y:auto;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    background:
+      radial-gradient(circle at 90% 0%, rgba(74,122,82,0.06), transparent 45%),
+      var(--page-bg);
+  }
+  .msg-row{ display:flex; gap:8px; max-width:100%; }
+  .msg-row.user{ justify-content:flex-end; }
+  .msg-row.bot .bubble-icon{
+    width:26px;height:26px;border-radius:50%;
+    background:var(--green-700);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;flex-shrink:0;margin-top:2px;
+  }
+  .bubble{
+    padding:10px 14px;
+    border-radius:16px;
+    max-width:78%;
+    font-size:14.5px;
+    line-height:1.45;
+    white-space:pre-wrap;
+    word-wrap:break-word;
+  }
+  .msg-row.bot .bubble{
+    background:var(--bot-bubble);
+    border:1px solid var(--border);
+    border-top-left-radius:4px;
+    color:var(--ink);
+  }
+  .msg-row.user .bubble{
+    background:var(--user-bubble);
+    color:var(--user-text);
+    border-top-right-radius:4px;
+  }
+  .bubble a{ color:inherit; text-decoration:underline; }
+  .msg-row.bot .bubble a{ color:var(--green-700); font-weight:600; }
+
+  .typing{
+    display:flex; gap:4px; align-items:center; padding:8px 6px;
+  }
+  .typing span{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--muted);
+    animation:blink 1.2s infinite ease-in-out;
+  }
+  .typing span:nth-child(2){ animation-delay:0.2s; }
+  .typing span:nth-child(3){ animation-delay:0.4s; }
+  @keyframes blink{ 0%,80%,100%{opacity:0.25;} 40%{opacity:1;} }
+
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:4px 16px 12px;
+  }
+  .chip{
+    background:var(--chip-bg);
+    border:1px solid var(--chip-border);
+    color:var(--chip-text);
+    padding:8px 13px;
+    border-radius:999px;
+    font-size:13px;
+    cursor:pointer;
+    font-weight:600;
+    transition:transform 0.05s ease, filter 0.15s ease;
+  }
+  .chip:hover{ filter:brightness(0.97); }
+  .chip:active{ transform:scale(0.96); }
+  .chip:focus-visible, .input-bar input:focus-visible, .input-bar button:focus-visible{
+    outline:2px solid var(--green-500);
+    outline-offset:2px;
+  }
+  .bubble strong{ font-variant-numeric: tabular-nums; }
+
+  @media (prefers-reduced-motion: reduce){
+    .typing span{ animation:none; opacity:0.6; }
+    .chip{ transition:none; }
+  }
+
+  .input-bar{
+    display:flex;
+    gap:8px;
+    padding:12px;
+    border-top:1px solid var(--border);
+    background:var(--card-bg);
+  }
+  .input-bar input{
+    flex:1;
+    border:1px solid var(--border);
+    background:var(--page-bg);
+    color:var(--ink);
+    border-radius:999px;
+    padding:11px 16px;
+    font-size:14px;
+    outline:none;
+  }
+  .input-bar input:focus{ border-color:var(--green-500); }
+  .input-bar button{
+    background:var(--green-700);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    width:44px;height:44px;
+    flex-shrink:0;
+    cursor:pointer;
+    font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .input-bar button:active{ transform:scale(0.95); }
+  .input-bar button:disabled{ opacity:0.5; cursor:not-allowed; }
+
+  .messages::-webkit-scrollbar{ width:8px; }
+  .messages::-webkit-scrollbar-thumb{ background:var(--border); border-radius:8px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="app-header">
+    <div class="avatar">🏔️</div>
+    <div class="titles">
+      <strong>North Star Support Bot</strong>
+      <span><span class="status-dot"></span>Here to help, trail-side or at home</span>
+    </div>
+  </div>
+
+  <div class="messages" id="messages"></div>
+  <div class="chips" id="chips"></div>
+
+  <form class="input-bar" id="inputForm">
+    <input id="textInput" type="text" placeholder="Type a message… (e.g. “Where is my order?”)" autocomplete="off" />
+    <button type="submit" aria-label="Send">➤</button>
+  </form>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Mock data (provided) ----------
+  var ORDERS = {
+    "111": "📦 Order #111 — **Shipped!** It's on its way and arriving tomorrow. 🚚",
+    "222": "🛠️ Order #222 — **Processing.** It will ship within 24 hours. 🕐",
+    "333": "✅ Order #333 — **Delivered.**"
+  };
+
+  var RETURN_POLICY_TEXT =
+    "Here's our return policy 🌲\n" +
+    "• 30-day returns from the delivery date\n" +
+    "• Items must be unused\n" +
+    "• Original packaging required\n\n" +
+    "Start your return here: northstaroutdoor.com/returns (demo link)";
+
+  var SHIPPING_TEXT =
+    "Here's our shipping info 🚚\n" +
+    "• Standard shipping: 3-5 business days\n" +
+    "• Expedited shipping: 1-2 business days";
+
+  var PRODUCT_MAP = {
+    hiking:   { budget:"Budget-Friendly Trail Hiking Boots", durability:"Rugged All-Terrain Hiking Boots", weight:"Lightweight Trail Running Shoes" },
+    camping:  { budget:"Budget 3-Season Tents", durability:"Heavy-Duty 4-Season Tents", weight:"Ultralight Backpacking Tents" },
+    climbing: { budget:"Entry-Level Climbing Harness Sets", durability:"Pro-Grade Climbing Hardware", weight:"Lightweight Alpine Climbing Gear" },
+    everyday: { budget:"Affordable Everyday Outdoor Apparel", durability:"Heavy-Duty Outdoor Workwear", weight:"Lightweight Everyday Layers" }
+  };
+
+  // ---------- Intent matchers ----------
+  var RE = {
+    reset:      /\b(menu|main menu|start over|restart|go back)\b/i,
+    human:      /\b(human|live agent|real person|representative|agent|escalate|talk to (a )?(person|someone))\b/i,
+    order:      /\b(order|track|package|shipment|shipping status|where.*(order|package|stuff)|status of my)\b/i,
+    returns:    /\b(return|exchange|refund|send (it |this )?back)\b/i,
+    shipping:   /\b(shipping|delivery time|how long.*(ship|deliver)|when will it (ship|arrive))\b/i,
+    productRec: /\b(recommend|suggest|looking for|need (a|some)|gift|gear|which (boots|tent|product)|help me (find|choose|pick))\b/i,
+    greeting:   /\b(hi|hello|hey|howdy|good (morning|afternoon|evening))\b/i,
+    yes:        /\b(yes|yeah|yep|sure|ok(ay)?|please)\b/i,
+    no:         /\b(no|nope|nah|not really)\b/i,
+    digits:     /\d{2,}/
+  };
+
+  var ACTIVITY_MAP = [
+    { key:"hiking",   re:/\bhik(e|ing)|trail\b/i },
+    { key:"camping",  re:/\bcamp(ing)?|tent\b/i },
+    { key:"climbing", re:/\bclimb(ing)?\b/i },
+    { key:"everyday", re:/\bevery ?day|casual|daily\b/i }
+  ];
+  var PRIORITY_MAP = [
+    { key:"budget",     re:/\bprice|cheap|budget|afford|cost\b/i },
+    { key:"durability", re:/\bdurab|tough|rugged|long.?last\b/i },
+    { key:"weight",     re:/\bweight|light ?weight|pack ?able|pack ?ability\b/i }
+  ];
+
+  // ---------- State ----------
+  var state = { flow:"main", fallbackCount:0, product:{} };
+
+  var messagesEl = document.getElementById("messages");
+  var chipsEl = document.getElementById("chips");
+  var form = document.getElementById("inputForm");
+  var input = document.getElementById("textInput");
+
+  function scrollToBottom(){
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function renderText(text){
+    // minimal **bold** support, escape everything else
+    var escaped = text
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    escaped = escaped.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");
+    escaped = escaped.replace(/(northstaroutdoor\.com\/returns)/g,'<a href="#" onclick="return false;">$1</a>');
+    return escaped;
+  }
+
+  function addMessage(text, who){
+    var row = document.createElement("div");
+    row.className = "msg-row " + who;
+    if (who === "bot"){
+      var icon = document.createElement("div");
+      icon.className = "bubble-icon";
+      icon.textContent = "🌲";
+      row.appendChild(icon);
+    }
+    var bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.innerHTML = renderText(text);
+    row.appendChild(bubble);
+    messagesEl.appendChild(row);
+    scrollToBottom();
+  }
+
+  function botSay(text, delay){
+    return new Promise(function(resolve){
+      var row = document.createElement("div");
+      row.className = "msg-row bot";
+      var icon = document.createElement("div");
+      icon.className = "bubble-icon";
+      icon.textContent = "🌲";
+      var bubble = document.createElement("div");
+      bubble.className = "bubble typing";
+      bubble.innerHTML = "<span></span><span></span><span></span>";
+      row.appendChild(icon);
+      row.appendChild(bubble);
+      messagesEl.appendChild(row);
+      scrollToBottom();
+      setTimeout(function(){
+        bubble.classList.remove("typing");
+        bubble.innerHTML = renderText(text);
+        scrollToBottom();
+        resolve();
+      }, delay || 450);
+    });
+  }
+
+  function setChips(list){
+    chipsEl.innerHTML = "";
+    list.forEach(function(item){
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip";
+      chip.textContent = item.label;
+      chip.addEventListener("click", function(){
+        addMessage(item.label, "user");
+        handle(item.value !== undefined ? item.value : item.label);
+      });
+      chipsEl.appendChild(chip);
+    });
+  }
+
+  var MAIN_CHIPS = [
+    { label:"📦 Track My Order", value:"track my order" },
+    { label:"↩️ Returns & Exchanges", value:"i want a return" },
+    { label:"🎒 Product Recommendations", value:"recommend a product" },
+    { label:"🧑‍💻 Talk to a Human", value:"talk to a human" }
+  ];
+
+  // ---------- Flow handlers ----------
+  async function showMainMenu(greetingFirst){
+    state.flow = "main";
+    state.fallbackCount = 0;
+    state.product = {};
+    if (greetingFirst){
+      await botSay("Welcome back to North Star! 🌄 What can I help you with?");
+    } else {
+      await botSay("Anything else I can help with? Here's what I can do:");
+    }
+    setChips(MAIN_CHIPS);
+  }
+
+  async function startOrderTracking(prefilledId){
+    state.flow = "order_ask_number";
+    if (prefilledId){
+      await handleOrderNumber(prefilledId);
+      return;
+    }
+    await botSay("Happy to check that for you! 📦 What's your order number? (e.g. #111)");
+    setChips([]);
+  }
+
+  async function handleOrderNumber(idRaw){
+    var id = idRaw.replace(/\D/g,"");
+    if (!id){
+      await botSay("I just need the order number — something like #111. Or type “menu” to go back.");
+      return;
+    }
+    var status = ORDERS[id];
+    if (!status){
+      await botSay("Hmm, I couldn't find an order with the number #" + id + ". Please double-check and try again, or type “menu” to head back.");
+      return;
+    }
+    await botSay(status);
+    if (id === "333"){
+      state.flow = "order_followup_333";
+      await botSay("Since that one's already arrived, would you like help starting a return or exchange for it?");
+      setChips([
+        { label:"Yes, help me return it", value:"yes" },
+        { label:"No, that's all", value:"no" }
+      ]);
+      return;
+    }
+    await showMainMenu(false);
+  }
+
+  async function handleOrderFollowup333(text){
+    if (RE.yes.test(text)){
+      await startReturns();
+      return;
+    }
+    if (RE.no.test(text)){
+      await botSay("Glad it made it there safely! 🌲");
+      await showMainMenu(false);
+      return;
+    }
+    await botSay("Just to confirm — would you like help with a return or exchange for order #333?");
+    setChips([
+      { label:"Yes, help me return it", value:"yes" },
+      { label:"No, that's all", value:"no" }
+    ]);
+  }
+
+  async function startReturns(){
+    state.flow = "returns_done";
+    await botSay(RETURN_POLICY_TEXT);
+    await showMainMenu(false);
+  }
+
+  async function startProductRec(){
+    state.flow = "product_step1";
+    state.product = {};
+    await botSay("Let's find the right gear for you! 🎒 What will you mainly be using it for — hiking, camping, climbing, or everyday/casual wear?");
+    setChips([
+      { label:"🥾 Hiking", value:"hiking" },
+      { label:"⛺ Camping", value:"camping" },
+      { label:"🧗 Climbing", value:"climbing" },
+      { label:"🧢 Everyday/Casual", value:"everyday" }
+    ]);
+  }
+
+  async function handleProductStep1(text){
+    var match = ACTIVITY_MAP.find(function(a){ return a.re.test(text) || text === a.key; });
+    if (!match){
+      await botSay("Sorry, I didn't catch that — is it mainly for hiking, camping, climbing, or everyday/casual use?");
+      setChips([
+        { label:"🥾 Hiking", value:"hiking" },
+        { label:"⛺ Camping", value:"camping" },
+        { label:"🧗 Climbing", value:"climbing" },
+        { label:"🧢 Everyday/Casual", value:"everyday" }
+      ]);
+      return;
+    }
+    state.product.activity = match.key;
+    state.flow = "product_step2";
+    await botSay("Got it! One more thing — what matters most to you: price, durability, or weight/packability?");
+    setChips([
+      { label:"💰 Price", value:"budget" },
+      { label:"💪 Durability", value:"durability" },
+      { label:"🪶 Weight/Packability", value:"weight" }
+    ]);
+  }
+
+  async function handleProductStep2(text){
+    var match = PRIORITY_MAP.find(function(p){ return p.re.test(text) || text === p.key; });
+    if (!match){
+      await botSay("No worries — just let me know: price, durability, or weight/packability?");
+      setChips([
+        { label:"💰 Price", value:"budget" },
+        { label:"💪 Durability", value:"durability" },
+        { label:"🪶 Weight/Packability", value:"weight" }
+      ]);
+      return;
+    }
+    var activity = state.product.activity;
+    var rec = PRODUCT_MAP[activity][match.key];
+    await botSay("Based on that, I'd recommend checking out our **" + rec + "** category. 🌟");
+    await showMainMenu(false);
+  }
+
+  async function startHandoff(fromFallback){
+    state.flow = "handoff";
+    if (fromFallback){
+      await botSay("I'm having trouble understanding — let's get you a live agent. 🔄");
+    } else {
+      await botSay("No problem — connecting you to a live agent now… 🔄");
+    }
+    await botSay("🧑‍💻 You're now in a simulated Live Agent chat. A team member would pick up here in a real deployment. Anything you'd like me to note for them?", 700);
+    setChips([{ label:"⬅️ Return to Main Menu", value:"__return_menu__" }]);
+  }
+
+  async function handleHandoffChat(text, raw){
+    if (text === "__return_menu__"){
+      await showMainMenu(true);
+      return;
+    }
+    await botSay("📝 Got it, I've noted that for the live agent. They'll follow up with details. Anything else to add, or would you like to head back to the main menu?");
+    setChips([{ label:"⬅️ Return to Main Menu", value:"__return_menu__" }]);
+  }
+
+  async function fallback(){
+    state.fallbackCount++;
+    if (state.fallbackCount >= 2){
+      await botSay("I didn't quite catch that. 🤔");
+      await startHandoff(true);
+      return;
+    }
+    await botSay("I didn't quite catch that. 🤔 Here's what I can help with:");
+    setChips(MAIN_CHIPS.concat([{ label:"🧑‍💻 Talk to a Human", value:"talk to a human" }]).filter(function(c, i, arr){
+      return arr.findIndex(function(x){ return x.label === c.label; }) === i;
+    }));
+  }
+
+  async function handleMainIntent(text, raw){
+    if (RE.order.test(text)){
+      var idMatch = raw.match(RE.digits);
+      await startOrderTracking(idMatch ? idMatch[0] : null);
+      return;
+    }
+    if (RE.returns.test(text)){
+      await startReturns();
+      return;
+    }
+    if (RE.shipping.test(text)){
+      await botSay(SHIPPING_TEXT);
+      await showMainMenu(false);
+      return;
+    }
+    if (RE.productRec.test(text)){
+      await startProductRec();
+      return;
+    }
+    if (RE.greeting.test(text)){
+      await showMainMenu(true);
+      return;
+    }
+    await fallback();
+  }
+
+  // ---------- Central dispatcher ----------
+  async function handle(raw){
+    var text = String(raw).toLowerCase().trim();
+    setChips([]);
+
+    if (RE.reset.test(text)){
+      await showMainMenu(true);
+      return;
+    }
+    if (RE.human.test(text) && state.flow !== "handoff"){
+      await startHandoff(false);
+      return;
+    }
+
+    switch(state.flow){
+      case "order_ask_number":
+        await handleOrderNumber(text);
+        return;
+      case "order_followup_333":
+        await handleOrderFollowup333(text);
+        return;
+      case "product_step1":
+        await handleProductStep1(text);
+        return;
+      case "product_step2":
+        await handleProductStep2(text);
+        return;
+      case "handoff":
+        await handleHandoffChat(text, raw);
+        return;
+      case "returns_done":
+      case "main":
+      default:
+        await handleMainIntent(text, raw);
+        return;
+    }
+  }
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var val = input.value.trim();
+    if (!val) return;
+    addMessage(val, "user");
+    input.value = "";
+    handle(val);
+  });
+
+  // Sync with host page theme toggle, if any (for artifact hosting)
+  try {
+    var root = document.documentElement;
+    var mql = window.matchMedia("(prefers-color-scheme: dark)");
+  } catch(e) {}
+
+  // ---------- Boot ----------
+  (async function boot(){
+    await botSay("Hey there! 👋 I'm the North Star Support Bot. I can help with order tracking, returns & exchanges, product recommendations, or connect you to a human.", 300);
+    setChips(MAIN_CHIPS);
+  })();
+
+})();
+</script>
+</body>
+</html>

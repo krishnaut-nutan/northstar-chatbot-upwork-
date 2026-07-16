@@ -1,0 +1,20 @@
+{
+  "name": "north-star-support-bot",
+  "version": "2.0.0",
+  "private": true,
+  "description": "North Star Support Bot - hybrid rule engine + Groq LLM outdoor brand support chatbot",
+  "type": "module",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.x"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "vercel-build": "echo 'No build step required — static files served from /Public'"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}

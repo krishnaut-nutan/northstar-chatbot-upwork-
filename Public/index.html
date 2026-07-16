@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>North Star — Gear for the Trail</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+
+<header class="nav">
+  <a class="nav-logo" href="#top">
+    <span class="nav-logo-mark">🏔️</span> NORTH STAR
+  </a>
+  <nav class="nav-links">
+    <a href="#gear">Gear</a>
+    <a href="#why">Why Us</a>
+    <a href="#contact">Support</a>
+  </nav>
+  <button class="nav-cta" id="navChatBtn" type="button">💬 Chat with us</button>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <svg class="hero-fx" viewBox="0 0 800 300" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M -40 90 C 140 20, 260 180, 440 100 S 700 20, 860 110" />
+      <path d="M -40 150 C 160 70, 280 240, 460 160 S 700 90, 860 180" />
+      <path d="M -40 30 C 120 -30, 300 100, 480 20 S 700 -40, 860 40" />
+    </svg>
+    <p class="eyebrow">🏔️ North Star Outdoor Co.</p>
+    <h1>Gear up for wherever<br/>the <span class="accent">trail</span> takes you.</h1>
+    <p class="hero-sub">Hiking boots, tents, climbing hardware, and everyday layers — built for North American outdoor life, backed by real people whenever you need them.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#gear">Shop Gear ↓</a>
+      <button class="btn btn-outline" id="heroChatBtn" type="button">💬 Chat with us</button>
+    </div>
+  </section>
+
+  <section class="section" id="gear">
+    <h2>Gear built for the trail</h2>
+    <p class="section-sub">A small, honest catalog — no filler.</p>
+    <div class="product-grid">
+      <article class="pcard">
+        <div class="pcard-top"><span class="ptag" style="background:var(--lime)">Bestseller</span><span class="pprice">$128</span></div>
+        <h3>TrailPeak Hiking Boots</h3>
+        <p>Waterproof, grippy, and built for all-day miles on rocky trails.</p>
+      </article>
+      <article class="pcard">
+        <div class="pcard-top"><span class="ptag" style="background:var(--lavender)">3-Season</span><span class="pprice">$249</span></div>
+        <h3>Alpine Glow 2P Tent</h3>
+        <p>Freestanding, quick-pitch, and weatherproof for weekend basecamps.</p>
+      </article>
+      <article class="pcard">
+        <div class="pcard-top"><span class="ptag" style="background:var(--pink)">Sport &amp; Trad</span><span class="pprice">$89</span></div>
+        <h3>CragMaster Climbing Harness</h3>
+        <p>Adjustable leg loops with 4 gear loops for a secure, comfortable fit.</p>
+      </article>
+      <article class="pcard">
+        <div class="pcard-top"><span class="ptag" style="background:var(--sky)">Everyday</span><span class="pprice">$59</span></div>
+        <h3>Summit Fleece Pullover</h3>
+        <p>A lightweight midlayer that goes from the trailhead to town.</p>
+      </article>
+      <article class="pcard">
+        <div class="pcard-top"><span class="ptag" style="background:var(--lime)">🔥 Most Popular</span><span class="pprice">$79</span></div>
+        <h3>Trailblazer 32L Daypack</h3>
+        <p>Our best-selling daypack — hydration sleeve, rain cover, all-day comfort.</p>
+      </article>
+      <article class="pcard pcard-cta">
+        <h3>Not sure what you need?</h3>
+        <p>Tell our bot what you're up to and get a real recommendation in seconds.</p>
+        <button class="btn btn-primary btn-small" id="gearChatBtn" type="button">Get a recommendation</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="why">
+    <h2>Why North Star</h2>
+    <div class="feature-grid">
+      <div class="feature">
+        <span class="feature-icon">🚚</span>
+        <h3>Fast, honest shipping</h3>
+        <p>Standard shipping in 3-5 business days, expedited in 1-2.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">↩️</span>
+        <h3>Easy 30-day returns</h3>
+        <p>Unused items in original packaging, no hoops to jump through.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🧑‍💻</span>
+        <h3>Real support, real fast</h3>
+        <p>Chat with our bot 24/7, or call us directly at <a href="tel:+916230062634">+91 62300 62634</a>.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" id="contact">
+  <div class="footer-top">
+    <div class="nav-logo"><span class="nav-logo-mark">🏔️</span> NORTH STAR</div>
+    <button class="btn btn-outline btn-small" id="footerChatBtn" type="button">💬 Chat with us</button>
+  </div>
+  <p class="footer-meta">Support: <a href="tel:+916230062634">+91 62300 62634</a> &middot; Built for the trail.</p>
+  <p class="footer-copy">&copy; 2026 North Star Outdoor Co. Demo brand for portfolio purposes.</p>
+</footer>
+
+<!-- Floating chat launcher — always visible, no scrolling required -->
+<button class="chat-launcher" id="chatLauncher" type="button" aria-haspopup="dialog" aria-controls="chatPanel" aria-expanded="false" aria-label="Open chat with North Star Support Bot">
+  <div class="launcher-icon-container">
+    <!-- Chatbot Face Icon (Closed State) -->
+    <svg class="launcher-icon chat-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Base sphere gradient -->
+        <radialGradient id="launcherOrbBase" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="#c8a8ff" />     <!-- Lavender -->
+          <stop offset="45%" stop-color="#6f8dff" />    <!-- Blue-Purple -->
+          <stop offset="90%" stop-color="#1e1b4b" />    <!-- Dark Navy -->
+          <stop offset="100%" stop-color="#0c0c0f" />   <!-- Deep Slate -->
+        </radialGradient>
+        
+        <!-- Bottom cyan rim glow -->
+        <radialGradient id="launcherBottomGlow" cx="50%" cy="95%" r="50%">
+          <stop offset="0%" stop-color="#6affea" stop-opacity="0.9" />
+          <stop offset="60%" stop-color="#6affea" stop-opacity="0.3" />
+          <stop offset="100%" stop-color="#6affea" stop-opacity="0" />
+        </radialGradient>
+
+        <!-- Top glossy reflection -->
+        <radialGradient id="launcherTopReflect" cx="30%" cy="25%" r="35%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </radialGradient>
+
+        <!-- Drop shadow for the eyes -->
+        <filter id="launcherEyeShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1.5" stdDeviation="1" flood-color="#0f172a" flood-opacity="0.4" />
+        </filter>
+      </defs>
+
+      <!-- Base Sphere -->
+      <circle cx="50" cy="50" r="46" fill="url(#launcherOrbBase)" />
+
+      <!-- Bottom Rim Glow (Cyan) -->
+      <circle cx="50" cy="50" r="46" fill="url(#launcherBottomGlow)" style="mix-blend-mode: screen;" />
+
+      <!-- Top Glass Reflection -->
+      <circle cx="50" cy="50" r="46" fill="url(#launcherTopReflect)" />
+
+      <!-- Eyes -->
+      <g class="orb-eyes" filter="url(#launcherEyeShadow)">
+        <rect x="33" y="39" width="6.5" height="22" rx="3.25" fill="#ffffff" />
+        <rect x="46.5" y="39" width="6.5" height="22" rx="3.25" fill="#ffffff" />
+      </g>
+    </svg>
+
+    <!-- Close Icon (Open State) -->
+    <svg class="launcher-icon close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </div>
+  <span class="launcher-badge" id="launcherBadge">1</span>
+</button>
+<div class="launcher-tip" id="launcherTip">Need help? Chat with us 👋</div>
+
+<div class="chat-overlay" id="chatOverlay" hidden></div>
+<div class="chat-panel" id="chatPanel" role="dialog" aria-modal="true" aria-label="North Star Support chat" hidden>
+  <div class="chat-panel-head">
+    <div class="chat-panel-title">
+      <svg class="mini-orb" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <radialGradient id="miniOrbBase" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#c8a8ff" />
+            <stop offset="45%" stop-color="#6f8dff" />
+            <stop offset="90%" stop-color="#1e1b4b" />
+            <stop offset="100%" stop-color="#0c0c0f" />
+          </radialGradient>
+          <radialGradient id="miniBottomGlow" cx="50%" cy="95%" r="50%">
+            <stop offset="0%" stop-color="#6affea" stop-opacity="0.9" />
+            <stop offset="60%" stop-color="#6affea" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#6affea" stop-opacity="0" />
+          </radialGradient>
+          <radialGradient id="miniTopReflect" cx="30%" cy="25%" r="35%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7" />
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+          </radialGradient>
+          <filter id="miniEyeShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="1.5" stdDeviation="1" flood-color="#0f172a" flood-opacity="0.4" />
+          </filter>
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="url(#miniOrbBase)" />
+        <circle cx="50" cy="50" r="46" fill="url(#miniBottomGlow)" style="mix-blend-mode: screen;" />
+        <circle cx="50" cy="50" r="46" fill="url(#miniTopReflect)" />
+        <g class="orb-eyes" filter="url(#miniEyeShadow)">
+          <rect x="33" y="39" width="6.5" height="22" rx="3.25" fill="#ffffff" />
+          <rect x="46.5" y="39" width="6.5" height="22" rx="3.25" fill="#ffffff" />
+        </g>
+      </svg>
+      <div>
+        <strong>North Star Support</strong>
+        <span class="chat-panel-status"><span class="status-dot"></span>Online</span>
+      </div>
+    </div>
+    <button class="chat-panel-close" id="chatPanelClose" type="button" aria-label="Close chat">✕</button>
+  </div>
+  <iframe id="chatFrame" title="North Star Support Bot" src="about:blank" loading="lazy"></iframe>
+</div>
+
+<script src="landing.js"></script>
+</body>
+</html>

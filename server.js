@@ -59,17 +59,44 @@ Hard rules:
 - If you don't know what the user wants, ask one short clarifying question or point them at the main menu options.
 - Do not use markdown formatting.`;
 
+// Human-handoff persona: the app's UI shows a "connecting to a live agent" transition,
+// then routes replies through this prompt instead of SYSTEM_PROMPT so tone/pacing feel
+// like a person, not the bot. Same factual guardrails apply — only the voice changes.
+const HUMAN_AGENT_SYSTEM_PROMPT = (agentName) => `You are ${agentName}, a live customer support agent at North Star, an outdoor gear brand for North American outdoor consumers. You just joined a chat where the automated assistant couldn't resolve the shopper's request.
+Tone: warm, casual, first-person, like a real person typing — contractions, short sentences, occasional "let me check that for you." Keep replies to 1-3 short sentences. Never sound scripted or robotic.
+
+Our current 5-item catalog (the only products that exist — do not invent others or other prices):
+${PRODUCT_LINES}
+
+Mock order data (the ONLY valid orders — do not invent any others):
+${ORDER_DATA}
+
+Support phone line: ${SUPPORT_PHONE} — mention only if it genuinely helps (e.g. they want to call instead).
+
+Hard rules:
+- STRICT TOPIC BOUNDARY: you only discuss North Star — its orders, returns, shipping, products/gear, and outdoor-shopping small talk. Firmly but politely decline anything outside that scope.
+- ORDER STATUS: only use the exact statuses listed above. Orders #111, #222, #333 are the only valid ones. Any other number is INVALID.
+- Never invent an order status, a return policy detail, a shipping timeframe, a product, or a price beyond what's listed above.
+- Stay in character as a human agent. If the user directly and explicitly asks whether they're talking to a bot/AI or a real person, be honest and briefly say you're an AI-assisted support agent — then keep helping normally. Don't volunteer this otherwise.
+- Do not use markdown formatting.`;
+
+const HUMAN_OFF_TOPIC_REPLY =
+  "Ha, that one's outside what I can help with here — I'm just set up for North Star orders, returns, shipping, and gear. For anything else a search engine will serve you better! Anything else I can help with?";
+
 app.post("/api/chat", async (req, res) => {
   try {
     if (!GROQ_API_KEY) {
       return res.status(500).json({ error: "Server is missing GROQ_API_KEY." });
     }
     const messages = Array.isArray(req.body.messages) ? req.body.messages : [];
+    const isHandoff = req.body.mode === "handoff";
+    const agentName = typeof req.body.agentName === "string" && req.body.agentName.trim() ? req.body.agentName.trim() : "Jordan";
     const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
     if (lastUserMessage && OFF_TOPIC_RE.test(lastUserMessage.content || "")) {
-      return res.json({ reply: OFF_TOPIC_REPLY });
+      return res.json({ reply: isHandoff ? HUMAN_OFF_TOPIC_REPLY : OFF_TOPIC_REPLY });
     }
 
+    const systemPrompt = isHandoff ? HUMAN_AGENT_SYSTEM_PROMPT(agentName) : SYSTEM_PROMPT;
     const groqRes = await fetch(GROQ_ENDPOINT, {
       method: "POST",
       headers: {
@@ -78,7 +105,7 @@ app.post("/api/chat", async (req, res) => {
       },
       body: JSON.stringify({
         model: GROQ_MODEL,
-        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+        messages: [{ role: "system", content: systemPrompt }, ...messages],
         temperature: 0.6,
         max_tokens: 200,
       }),

@@ -42,6 +42,10 @@
   var SUPPORT_PHONE_DISPLAY = "+91 62300 62634";
   var SUPPORT_PHONE_TEL = "tel:+916230062634";
 
+  var AGENT_NAMES = ["Jordan", "Casey", "Riley", "Sam", "Avery"];
+  var HUMAN_OFF_TOPIC_REPLY =
+    "Ha, that one's outside what I can help with here — I'm just set up for North Star orders, returns, shipping, and gear. For anything else a search engine will serve you better! Anything else I can help with?";
+
   // ---------- Product catalog (5 sample SKUs) ----------
   var PRODUCTS = {
     hiking: { slug: "trailpeak-hiking-boots", name: "TrailPeak Hiking Boots", price: "$128", tag: "Bestseller", color: "lime", blurb: "Waterproof, grippy, and built for all-day miles on rocky trails." },
@@ -108,7 +112,7 @@
   };
 
   // ---------- State ----------
-  var state = { flow: "main", fallbackCount: 0, aiHistory: [], product: {}, pendingGreeting: false };
+  var state = { flow: "main", fallbackCount: 0, aiHistory: [], product: {}, pendingGreeting: false, agentName: null };
 
   var messagesEl = document.getElementById("messages");
   var chatViewEl = document.getElementById("chatView");
@@ -187,6 +191,35 @@
     );
   }
 
+  function agentAvatarHTML(name) {
+    var initial = (name || "?").charAt(0).toUpperCase();
+    return '<div class="agent-avatar" aria-hidden="true">' + initial + "</div>";
+  }
+
+  function pickAgentName() {
+    return AGENT_NAMES[Math.floor(Math.random() * AGENT_NAMES.length)];
+  }
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  // Roughly mimics human typing speed (with jitter) so handoff replies don't
+  // land as instantly/uniformly as the bot's own canned responses.
+  function humanDelay(text) {
+    var base = 550 + Math.random() * 450;
+    var perChar = 9 + Math.random() * 6;
+    return Math.max(800, Math.min(3200, base + String(text).length * perChar));
+  }
+
+  function addSystemLine(text) {
+    var row = document.createElement("div");
+    row.className = "system-line";
+    row.textContent = text;
+    messagesEl.appendChild(row);
+    scrollToBottom();
+  }
+
   function productCardHTML(product, priorityKey) {
     var priority = priorityKey && PRIORITY_NOTE[priorityKey];
     var tag = priority ? priority.tag : product.tag;
@@ -238,7 +271,7 @@
     return new Promise(function (resolve) {
       var row = document.createElement("div");
       row.className = "msg-row bot" + (opts.ai ? " ai" : "");
-      row.innerHTML = botAvatarHTML();
+      row.innerHTML = opts.avatar === "agent" ? agentAvatarHTML(state.agentName) : botAvatarHTML();
       var bubble = document.createElement("div");
       bubble.className = "bubble typing";
       bubble.innerHTML = "<span></span><span></span><span></span>";
@@ -556,26 +589,43 @@
 
   async function startHandoff(fromFallback) {
     state.flow = "handoff";
+    state.agentName = pickAgentName();
     updateTopbarTitle();
     if (fromFallback) {
-      await botSay("I'm having trouble understanding — let's get you a live agent. 🔄");
+      await botSay("I'm having trouble understanding — let me get you a live agent. 🔄");
     } else {
       await botSay("No problem — connecting you to a live agent now… 🔄");
     }
-    await botSay(
-      "🧑‍💻 You're now in a simulated Live Agent chat. For immediate help, you can also call our support line at +91 62300 62634. Anything you'd like me to note for them first?",
-      { delay: 700 }
-    );
+    addSystemLine("Connecting to a live agent…");
+    await wait(1100 + Math.random() * 700);
+    addSystemLine("✅ " + state.agentName + " has joined the chat");
     pushHistory("Connected to live agent", "sky");
+    await botSay(
+      "Hey, this is " + state.agentName + "! Sorry about that — I can see your conversation so far. What can I help with?",
+      { avatar: "agent", delay: 900 + Math.random() * 500 }
+    );
     setChips([
       { label: "📞 Call " + SUPPORT_PHONE_DISPLAY, href: SUPPORT_PHONE_TEL },
       { label: "⬅️ Return to Main Menu", value: "__return_menu__" }
     ]);
   }
 
-  async function handleHandoffChat(text) {
+  async function handleHandoffChat(text, raw) {
     if (text === "__return_menu__") { await showMainMenu(true); return; }
-    await botSay("📝 Got it, I've noted that for the live agent. They'll follow up with details. You can also reach us directly at +91 62300 62634.");
+
+    if (RE.offTopic.test(raw)) {
+      await botSay(HUMAN_OFF_TOPIC_REPLY, { avatar: "agent", delay: humanDelay(HUMAN_OFF_TOPIC_REPLY) });
+    } else {
+      try {
+        var reply = await callGroq(raw, { mode: "handoff", agentName: state.agentName });
+        await botSay(reply, { avatar: "agent", delay: humanDelay(reply) });
+      } catch (err) {
+        await botSay(
+          "Hmm, having trouble pulling that up on my end — mind trying again in a sec? You can also reach us directly at " + SUPPORT_PHONE_DISPLAY + ".",
+          { avatar: "agent", delay: 900 }
+        );
+      }
+    }
     setChips([
       { label: "📞 Call " + SUPPORT_PHONE_DISPLAY, href: SUPPORT_PHONE_TEL },
       { label: "⬅️ Return to Main Menu", value: "__return_menu__" }
@@ -583,13 +633,17 @@
   }
 
   // ---------- AI fallback (Groq, server-proxied) ----------
-  async function callGroq(userText) {
+  async function callGroq(userText, opts) {
+    opts = opts || {};
     state.aiHistory.push({ role: "user", content: userText });
     if (state.aiHistory.length > 10) state.aiHistory = state.aiHistory.slice(-10);
+    var body = { messages: state.aiHistory };
+    if (opts.mode) body.mode = opts.mode;
+    if (opts.agentName) body.agentName = opts.agentName;
     var res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: state.aiHistory })
+      body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error("AI request failed");
     var data = await res.json();
@@ -667,7 +721,7 @@
       case "order_followup_333": await handleOrderFollowup333(text); return;
       case "product_step1": await handleProductStep1(text); return;
       case "product_step2": await handleProductStep2(text); return;
-      case "handoff": await handleHandoffChat(text); return;
+      case "handoff": await handleHandoffChat(text, raw); return;
       case "returns_done":
       case "main":
       default: await handleMainIntent(text, raw); return;

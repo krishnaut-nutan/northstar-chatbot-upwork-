@@ -1,11 +1,30 @@
 (function () {
   "use strict";
 
-  // ---------- Mock data (provided) ----------
+  // ---------- Mock data (per spec 3.c.i) ----------
+  // #111 → Shipped, arriving tomorrow
+  // #222 → Processing, ships in 24 hours
+  // #333 → Delivered (ask follow-up if needed)
+  // Any other → invalid
   var ORDERS = {
-    "111": { text: "📦 Order #111 — **Shipped!** It's on its way and arriving tomorrow. 🚚", short: "Shipped, arriving tomorrow" },
-    "222": { text: "🛠️ Order #222 — **Processing.** It will ship within 24 hours. 🕐", short: "Processing, ships in 24h" },
-    "333": { text: "✅ Order #333 — **Delivered.**", short: "Delivered" }
+    "111": {
+      status: "shipped",
+      text: "📦 Order #111 — **Shipped!** Your order is on its way and arriving **tomorrow**. 🚚",
+      short: "Shipped, arriving tomorrow",
+      historyColor: "lime"
+    },
+    "222": {
+      status: "processing",
+      text: "🛠️ Order #222 — **Processing.** Your order is being prepared and will ship within **24 hours**. 🕐",
+      short: "Processing, ships in 24h",
+      historyColor: "lavender"
+    },
+    "333": {
+      status: "delivered",
+      text: "✅ Order #333 — **Delivered!** This order has already arrived.",
+      short: "Delivered",
+      historyColor: "sky"
+    }
   };
 
   var RETURN_POLICY_TEXT =
@@ -371,33 +390,84 @@
       await handleOrderNumber(prefilledId);
       return;
     }
-    await botSay("Happy to check that for you! 📦 What's your order number? (e.g. #111)");
-    setChips([]);
+    await botSay("Happy to check that for you! 📦 What's your order number?\n(Demo orders: **#111**, **#222**, **#333**)");
+    setChips([
+      { label: "#111 — Shipped", value: "111" },
+      { label: "#222 — Processing", value: "222" },
+      { label: "#333 — Delivered", value: "333" }
+    ]);
   }
 
   async function handleOrderNumber(idRaw) {
+    // Strip everything except digits — handles "#111", "order 111", "111", etc.
     var id = idRaw.replace(/\D/g, "");
+
+    // No digits typed at all
     if (!id) {
-      await botSay("I just need the order number — something like #111. Or type “menu” to go back.");
-      return;
-    }
-    var order = ORDERS[id];
-    if (!order) {
-      await botSay("Hmm, I couldn't find an order with the number #" + id + ". Please double-check and try again, or type “menu” to head back.");
-      return;
-    }
-    await botSay(order.text);
-    pushHistory("Order #" + id + " — " + order.short, id === "333" ? "sky" : "lime");
-    if (id === "333") {
-      state.flow = "order_followup_333";
-      updateTopbarTitle();
-      await botSay("Since that one's already arrived, would you like help starting a return or exchange for it?");
+      await botSay("I just need your order number — try **#111**, **#222**, or **#333**. Or type \"menu\" to go back.");
       setChips([
-        { label: "Yes, help me return it", value: "yes" },
-        { label: "No, that's all", value: "no" }
+        { label: "#111", value: "111" },
+        { label: "#222", value: "222" },
+        { label: "#333", value: "333" },
+        { label: "↩ Main Menu", value: "menu" }
       ]);
       return;
     }
+
+    var order = ORDERS[id];
+
+    // ── INVALID ORDER ─────────────────────────────────────────────────────────
+    if (!order) {
+      await botSay(
+        "❌ Order **#" + id + "** wasn't found in our system.\n" +
+        "Our demo supports orders **#111**, **#222**, and **#333** only. " +
+        "Double-check your number and try again."
+      );
+      setChips([
+        { label: "Try #111", value: "111" },
+        { label: "Try #222", value: "222" },
+        { label: "Try #333", value: "333" },
+        { label: "↩ Main Menu", value: "menu" }
+      ]);
+      return;
+    }
+
+    // ── VALID ORDER ───────────────────────────────────────────────────────────
+    await botSay(order.text);
+    pushHistory("Order #" + id + " — " + order.short, order.historyColor);
+
+    // #333 — Delivered → ask follow-up about return/exchange
+    if (order.status === "delivered") {
+      state.flow = "order_followup_333";
+      updateTopbarTitle();
+      await botSay("Since your order already arrived, would you like help starting a return or exchange?");
+      setChips([
+        { label: "Yes, start a return", value: "yes" },
+        { label: "No thanks", value: "no" }
+      ]);
+      return;
+    }
+
+    // #111 — Shipped → arriving tomorrow, offer related actions
+    if (order.status === "shipped") {
+      setChips([
+        { label: "Track another order", value: "track my order" },
+        { label: "Returns & Exchanges", value: "i want a return" },
+        { label: "↩ Main Menu", value: "menu" }
+      ]);
+      return;
+    }
+
+    // #222 — Processing → ships in 24h, offer human handoff or more
+    if (order.status === "processing") {
+      setChips([
+        { label: "Track another order", value: "track my order" },
+        { label: "Talk to a Human", value: "talk to a human" },
+        { label: "↩ Main Menu", value: "menu" }
+      ]);
+      return;
+    }
+
     await showMainMenu(false);
   }
 
